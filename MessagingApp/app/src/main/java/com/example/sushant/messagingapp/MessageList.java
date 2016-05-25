@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.sushant.messagingapp.Adapter.MessageListAdapter;
+import com.example.sushant.messagingapp.POJO.SMSObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +30,7 @@ public class MessageList extends AppCompatActivity {
     public EventBus eventBus;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private ArrayList<SMSObject> smsObjectArrayList = new ArrayList<>();
 
     public static final int GET_RESPONSE = 1;
     public static final int POST_GET_RESPONSE = 2;
@@ -85,10 +87,25 @@ public class MessageList extends AppCompatActivity {
                 if(requestType == GET_RESPONSE) {
 
                     Uri inboxURI = Uri.parse(INBOX_URI);
-                    String[] reqCols = new String[] { "_id", "address", "body" };
                     ContentResolver cr = getContentResolver();
-                    Cursor c = cr.query(inboxURI, reqCols, null, null, null);
+                    Cursor cursor = cr.query(inboxURI, null, null, null, null);
 
+                    if (cursor != null && cursor.getCount() > 0) {
+                        cursor.moveToFirst();
+
+                        while (!cursor.isAfterLast()) {
+                            int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                            String address = cursor.getString(cursor.getColumnIndex("address"));
+                            String msgBody = cursor.getString(cursor.getColumnIndex("body"));
+                            String readState = cursor.getString(cursor.getColumnIndex("read"));
+                            String time = cursor.getString(cursor.getColumnIndex("date"));
+                            smsObjectArrayList.add(new SMSObject(id, address, msgBody, readState, time));
+                            cursor.moveToNext();
+                        }
+                        if (cursor != null) {
+                            cursor.close();
+                        }
+                    }
                     eventBus.post(new EventBusContext(POST_GET_RESPONSE));
                 }
 
@@ -103,7 +120,7 @@ public class MessageList extends AppCompatActivity {
 
     public void onEventMainThread(EventBusContext eventBusContext) {
         if (eventBusContext.getActionCode() == POST_GET_RESPONSE) {
-            mAdapter = new MessageListAdapter();
+            mAdapter = new MessageListAdapter(getApplicationContext(), smsObjectArrayList);
             recyclerView.addItemDecoration(new ContactDivider(getApplicationContext(), LinearLayoutManager.VERTICAL));
             recyclerView.setAdapter(mAdapter);
             mAdapter.notifyDataSetChanged();
@@ -113,16 +130,13 @@ public class MessageList extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement

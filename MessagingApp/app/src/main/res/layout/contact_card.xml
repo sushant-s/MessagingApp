@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="5dp"
         android:src="@drawable/contact"
         android:maxHeight="45dp"
         android:scaleType="fitXY"
@@ -20,25 +20,15 @@
 
 
     <TextView
-        android:id="@+id/first_name"
+        android:id="@+id/address"
         android:layout_toRightOf="@+id/contact_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="25dp"
         android:text="Sushant"
-        android:textSize="12sp"
-        android:textColor="@color/background_material_dark"/>
-
-    <TextView
-        android:id="@+id/last_name"
-        android:layout_toRightOf="@+id/first_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="7dp"
-        android:text="Saurabh"
-        android:textSize="12sp"
+        android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="@color/background_material_dark"/>
 
     <TextView
@@ -55,12 +45,16 @@
 
     <TextView
         android:id="@+id/short_message"
-        android:layout_below="@+id/last_name"
+        android:layout_below="@+id/address"
+        android:layout_toRightOf="@+id/contact_image"
+        android:paddingLeft="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_centerHorizontal="true"
         android:text="Hi, how are you??"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textSize="12sp"
         android:textColor="@color/background_material_dark"/>
 
