@@ -19,18 +19,20 @@ import com.example.sushant.messagingapp.POJO.SMSObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 
 import de.greenrobot.event.EventBus;
 
 public class MessageList extends AppCompatActivity {
 
-    public static final String INBOX_URI = "content://sms/inbox";
+    public static final String INBOX_URI = "content://sms/";
 
     private RecyclerView recyclerView;
     public EventBus eventBus;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private ArrayList<SMSObject> smsObjectArrayList = new ArrayList<>();
+    private ArrayList<String> addr = new ArrayList<>();
 
     public static final int GET_RESPONSE = 1;
     public static final int POST_GET_RESPONSE = 2;
@@ -88,18 +90,46 @@ public class MessageList extends AppCompatActivity {
 
                     Uri inboxURI = Uri.parse(INBOX_URI);
                     ContentResolver cr = getContentResolver();
-                    Cursor cursor = cr.query(inboxURI, null, null, null, null);
+                    Cursor cursor = cr.query(inboxURI, null, null, null, "date DESC");
 
                     if (cursor != null && cursor.getCount() > 0) {
                         cursor.moveToFirst();
 
                         while (!cursor.isAfterLast()) {
-                            int id = cursor.getInt(cursor.getColumnIndex("_id"));
                             String address = cursor.getString(cursor.getColumnIndex("address"));
-                            String msgBody = cursor.getString(cursor.getColumnIndex("body"));
-                            String readState = cursor.getString(cursor.getColumnIndex("read"));
-                            String time = cursor.getString(cursor.getColumnIndex("date"));
-                            smsObjectArrayList.add(new SMSObject(id, address, msgBody, readState, time));
+                            int len = address.length();
+                            if(address.length() == 13) {
+                                if (!addr.contains(address.substring(3, 12))) {
+                                    addr.add(address.substring(3, 12));
+                                    int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                                    String address1 = cursor.getString(cursor.getColumnIndex("address"));
+                                    String msgBody = cursor.getString(cursor.getColumnIndex("body"));
+                                    String readState = cursor.getString(cursor.getColumnIndex("read"));
+                                    String time = cursor.getString(cursor.getColumnIndex("date"));
+                                    smsObjectArrayList.add(new SMSObject(id, address1, msgBody, readState, time));
+                                }
+                            } else if(address.length() == 11){
+                                if (!addr.contains(address.substring(1, 10))) {
+                                    addr.add(address.substring(1, 10));
+                                    int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                                    String address1 = cursor.getString(cursor.getColumnIndex("address"));
+                                    String msgBody = cursor.getString(cursor.getColumnIndex("body"));
+                                    String readState = cursor.getString(cursor.getColumnIndex("read"));
+                                    String time = cursor.getString(cursor.getColumnIndex("date"));
+                                    smsObjectArrayList.add(new SMSObject(id, address1, msgBody, readState, time));
+                                }
+                            } else {
+                                if (!addr.contains(address)) {
+                                    addr.add(address);
+                                    int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                                    String address1 = cursor.getString(cursor.getColumnIndex("address"));
+                                    String msgBody = cursor.getString(cursor.getColumnIndex("body"));
+                                    String readState = cursor.getString(cursor.getColumnIndex("read"));
+                                    String time = cursor.getString(cursor.getColumnIndex("date"));
+                                    smsObjectArrayList.add(new SMSObject(id, address1, msgBody, readState, time));
+
+                                }
+                            }
                             cursor.moveToNext();
                         }
                         if (cursor != null) {

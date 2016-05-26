@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,34 +14,31 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.sushant.messagingapp.MsgDetail;
+import com.example.sushant.messagingapp.POJO.ParticularSMS;
 import com.example.sushant.messagingapp.POJO.SMSObject;
 import com.example.sushant.messagingapp.R;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Locale;
 
 /**
- * Created by sushant on 25/5/16.
+ * Created by sushant on 26/5/16.
  */
-public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.ViewHolder> {
+public class MsgDetailAdapter extends RecyclerView.Adapter<MsgDetailAdapter.ViewHolder> {
 
     private static Context sContext;
-    public String name;
-    public ArrayList<SMSObject> smsObjectArrayList = new ArrayList<>();
+    public ArrayList<ParticularSMS> particularSMSes = new ArrayList<>();
 
-    public MessageListAdapter(Context context, ArrayList<SMSObject> smsObjectArrayList) {
+    public MsgDetailAdapter(Context context, ArrayList<ParticularSMS> particularSMSes) {
         sContext = context;
-        this.smsObjectArrayList = smsObjectArrayList;
+        this.particularSMSes = particularSMSes;
     }
 
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v;
-        v = LayoutInflater.from(parent.getContext()).inflate(R.layout.contact_card, parent, false);
+        v = LayoutInflater.from(parent.getContext()).inflate(R.layout.read, parent, false);
         ViewHolder holder = new ViewHolder(v);
 
         return holder;
@@ -50,22 +46,16 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        String address = smsObjectArrayList.get(getItemPosition(position)).getAddress();
-        name = getContactName(sContext,address);
-        String time = getDate(Long.parseLong(smsObjectArrayList.get(getItemPosition(position)).getTime()));
+        String address = particularSMSes.get(getItemPosition(position)).getAddress();
+        String name = getContactName(sContext,address);
+        //String time = getDate(Long.parseLong(smsObjectArrayList.get(getItemPosition(position)).getTime()));
         if(name == null)
             holder.sender_add.setText(address);
         else
             holder.sender_add.setText(name);
-        holder.time.setText(time);
-        holder.short_msg.setText(smsObjectArrayList.get(getItemPosition(position)).getMsgBody());
+        //holder.time.setText(time);
+        holder.msg.setText(particularSMSes.get(getItemPosition(position)).getMsg());
 
-        holder.msg_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openMsgDetail(getItemPosition(position));
-            }
-        });
 
     }
 
@@ -97,16 +87,6 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         return contactName;
     }
 
-    public void openMsgDetail(int position) {
-        Intent i=null;
-        i = new Intent(sContext, MsgDetail.class);
-        i.putExtra("_id", String.valueOf(smsObjectArrayList.get(getItemPosition(position)).getId()));
-        i.putExtra("address", smsObjectArrayList.get(getItemPosition(position)).getAddress());
-        i.putExtra("name", name);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        sContext.startActivity(i);
-
-    }
 
     public int getItemPosition(int position){
         return position;
@@ -115,18 +95,18 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public int getItemCount() {
-        return smsObjectArrayList.size();
+        return particularSMSes.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private RelativeLayout msg_view;
-        private TextView sender_add,time,short_msg;
+        private TextView sender_add,time,msg;
         public ViewHolder(View v) {
             super(v);
             msg_view = (RelativeLayout)v.findViewById(R.id.contact);
             sender_add = (TextView)v.findViewById(R.id.address);
             time = (TextView)v.findViewById(R.id.time);
-            short_msg = (TextView)v.findViewById(R.id.short_message);
+            msg = (TextView)v.findViewById(R.id.message);
         }
 
     }
